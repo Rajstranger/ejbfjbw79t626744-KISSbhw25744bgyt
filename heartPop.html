@@ -6,144 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <style>
-      @keyframes moveGradient {
-        0% {
-          background-position: 0% 0%;
-        }
-        100% {
-          background-position: 100% 0%;
-        }
-      }
-
-      body {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 100vh; /* Full height */
-        margin: 0; /* Remove default margin */
-        background: linear-gradient(
-          45deg,
-          rgba(207, 159, 255, 0.8),
-          rgba(255, 105, 180, 0.75),
-          rgba(255, 192, 203, 0.9)
-        );
-        background-size: 200% 200%;
-      }
-
-      .heart {
-        display: inline-block;
-        width: 150px; /* Adjusted for smaller screens */
-        aspect-ratio: 1;
-        border-image: radial-gradient(red 69%, #0000 70%) 84.5%/50%;
-        clip-path: polygon(-41% 0, 50% 91%, 141% 0);
-        transition: transform 0.3s ease;
-      }
-
-      .heart:hover {
-        transform: scale(1.2);
-      }
-
-      .heart.clicked {
-        transform: scale(1.3);
-      }
-
-      .heart.clicked > .heart-text {
-        color: white !important;
-      }
-
-      .heart-text {
-        margin-top: 40px;
-        font-size: 16px;
-        user-select: none;
-        color: red;
-        text-align: center;
-        transition: all 0.3s ease;
-      }
-
-      .center {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        margin: 0;
-        padding: 0;
-      }
-
-      canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: -2;
-      }
-
-      .instructions {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        user-select: none;
-        pointer-events: none;
-        color: white;
-        font-size: 14px;
-        transform: translate(-50%, 20px);
-        transition: all 0.3s ease;
-        text-align: center;
-        opacity: 0;
-      }
-
-      .heart:hover .instructions {
-        transform: translate(-50%, -40px);
-        opacity: 1;
-      }
-
-      /* On mobile devices, show the instructions by default (mobile can't hover) */
-      @media (max-width: 600px) {
-        .instructions {
-          transform: translate(-50%, -40px);
-          /* opacity: 1; */
-          font-size: 12px; /* Adjusted for smaller screens */
-
-        }
-
-        .heart {
-          width: 120px; /* Further adjusted for very small screens */
-        }
-
-        .heart-text {
-          font-size: 12px; /* Adjusted for smaller screens */
-        }
-      }
-
-      .heart.clicked .instructions {
-        opacity: 0;
-      }
-
-      .circle {
-        position: absolute;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        cursor: pointer;
-        transition: all 1s ease;
-        transform: translate(-50%, -50%);
-        top: 5%;
-        left: 95%;
-        z-index: 2;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 24px;
-      }
-
-      .circle.expand {
-        width: 250vh;
-        height: 250vh;
-        top: 50%;
-        left: 50%;
-        background: linear-gradient(117deg, #ff41f7 0%, rgba(255, 73, 73, 0.81) 100%);
-      }
+      /* Your existing CSS styles */
     </style>
   </head>
   <body>
@@ -158,7 +21,8 @@
         <p class="instructions">Want kiss? <br> Click me!</p> <br>
       </div>
     </div>
-    <audio id="valentineSong" src="kissVoice.ogg" preload="auto"></audio>
+    <!-- Remove preload="auto" -->
+    <audio id="valentineSong" src="kissVoice.ogg"></audio>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@latest"></script>
     <script>
       function toggle(element) {
@@ -169,7 +33,7 @@
             document.getElementById("textInner").style.opacity = "1";
           }, 100);
           createConfetti();
-          playSongSegment(0.6, 2);
+          playSongSegment(0.6, 2); // Play audio on user click
         } else {
           document.getElementById("textInner").style.opacity = "0";
           setTimeout(() => {
@@ -182,7 +46,10 @@
       function playSongSegment(startTime, endTime) {
         const audio = document.getElementById("valentineSong");
         audio.currentTime = startTime;
-        audio.play();
+        audio.play().catch(error => {
+          console.error("Audio playback failed:", error);
+          // Handle the error (e.g., show a message to the user)
+        });
 
         setTimeout(() => {
           audio.pause();
