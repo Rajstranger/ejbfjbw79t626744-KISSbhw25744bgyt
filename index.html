@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expanding Circle Animation</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body, html {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .background {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .triangle {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: transform 1s ease-in-out;
+    }
+
+    .triangle:nth-child(1) {
+      background: rgb(3,73,80);
+      background: -moz-linear-gradient(0deg, rgba(3,73,80,1) 20%, rgba(0,198,255,1) 100%);
+      background: -webkit-linear-gradient(0deg, rgba(3,73,80,1) 20%, rgba(0,198,255,1) 100%);
+      background: linear-gradient(0deg, rgba(3,73,80,1) 20%, rgba(0,198,255,1) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#034950",endColorstr="#00c6ff",GradientType=1);
+      clip-path: polygon(50% 50%, 0% 0%, 100% 0%);
+    }
+
+    .triangle:nth-child(2) {
+      background: rgb(80,42,3);
+      background: -moz-linear-gradient(90deg, rgba(80,42,3,1) 20%, rgba(255,123,0,1) 100%);
+      background: -webkit-linear-gradient(90deg, rgba(80,42,3,1) 20%, rgba(255,123,0,1) 100%);
+      background: linear-gradient(90deg, rgba(80,42,3,1) 20%, rgba(255,123,0,1) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#502a03",endColorstr="#ff7b00",GradientType=1);
+      clip-path: polygon(50% 50%, 100% 0%, 100% 100%);
+    }
+
+    .triangle:nth-child(3) {
+      background: rgb(73,3,80);
+      background: -moz-linear-gradient(180deg, rgba(73,3,80,1) 20%, rgba(243,0,255,1) 100%);
+      background: -webkit-linear-gradient(180deg, rgba(73,3,80,1) 20%, rgba(243,0,255,1) 100%);
+      background: linear-gradient(180deg, rgba(73,3,80,1) 20%, rgba(243,0,255,1) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#490350",endColorstr="#f300ff",GradientType=1);
+      clip-path: polygon(50% 50%, 100% 100%, 0% 100%);
+    }
+
+    .triangle:nth-child(4) {
+      background: rgb(80,57,3);
+      background: -moz-linear-gradient(270deg, rgba(80,57,3,1) 20%, rgba(255,209,0,1) 100%);
+      background: -webkit-linear-gradient(270deg, rgba(80,57,3,1) 20%, rgba(255,209,0,1) 100%);
+      background: linear-gradient(270deg, rgba(80,57,3,1) 20%, rgba(255,209,0,1) 100%);
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#503903",endColorstr="#ffd100",GradientType=1);
+      clip-path: polygon(50% 50%, 0% 100%, 0% 0%);
+    }
+
+    .circle {
+      width: 50px;
+      height: 50px;
+      background-color: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      transition: transform 0.5s ease, border-color 0.5s ease;
+      cursor: pointer;
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      border: 3px solid transparent;
+    }
+
+    .triangle:nth-child(1) .circle {
+      top: 20%;
+      left: 50%;
+    }
+
+    .triangle:nth-child(2) .circle {
+      top: 50%;
+      right: 15%;
+    }
+
+    .triangle:nth-child(3) .circle {
+      bottom: 20%;
+      left: 50%;
+    }
+
+    .triangle:nth-child(4) .circle {
+      top: 50%;
+      left: 15%;
+    }
+
+    .circle.expanded {
+      transform: scale(3);
+    }
+
+    .circle span {
+      display: block;
+    }
+
+    .circle.expanded span {
+      display: none;
+    }
+
+    .circle input {
+      display: none;
+      width: 60%;
+      padding: 3px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 3px;
+      text-align: center;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .circle.expanded input {
+      display: block;
+    }
+
+    .circle.correct {
+      border-color: rgb(0, 255, 42);
+      animation: pulse-green 0.5s ease;
+    }
+
+    .circle.incorrect {
+      border-color: rgb(255, 0, 0);
+      animation: pulse-red 0.5s ease;
+    }
+
+    @keyframes pulse-green {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes pulse-red {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .lock-emoji {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 60px;
+      display: none;
+      cursor: pointer;
+      transition: top 1s ease-in-out;
+    }
+
+    .lock-emoji.visible {
+      display: block;
+    }
+
+    .lock-emoji.drop-down {
+      top: 150%;
+    }
+
+    .triangle.roll-off-top {
+      transform: translateY(-100%);
+    }
+
+    .triangle.roll-off-right {
+      transform: translateX(100%);
+    }
+
+    .triangle.roll-off-bottom {
+      transform: translateY(100%);
+    }
+
+    .triangle.roll-off-left {
+      transform: translateX(-100%);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .circle {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+
+      .circle.expanded {
+        transform: scale(2.5);
+      }
+
+      .circle input {
+        font-size: 4px;
+      }
+
+      .lock-emoji {
+        font-size: 50px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .circle {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+      }
+
+      .circle.expanded {
+        transform: scale(2);
+      }
+
+      .circle input {
+        font-size: 3px;
+      }
+
+      .lock-emoji {
+        font-size: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="background">
+      <div class="triangle">
+        <div class="circle" onclick="expandCircle(this)">
+          <span>💛</span>
+          <input type="text" placeholder="Enter code" oninput="validateAnswer(this, '0407')" onclick="event.stopPropagation()">
+        </div>
+      </div>
+      <div class="triangle">
+        <div class="circle" onclick="expandCircle(this)">
+          <span>❤️</span>
+          <input type="text" placeholder="Enter code" oninput="validateAnswer(this, 'heng')" onclick="event.stopPropagation()">
+        </div>
+      </div>
+      <div class="triangle">
+        <div class="circle" onclick="expandCircle(this)">
+          <span>💙</span>
+          <input type="text" placeholder="Enter code" oninput="validateAnswer(this, '0808')" onclick="event.stopPropagation()">
+        </div>
+      </div>
+      <div class="triangle">
+        <div class="circle" onclick="expandCircle(this)">
+          <span>💚</span>
+          <input type="text" placeholder="Enter code" oninput="validateAnswer(this, 'raj')" onclick="event.stopPropagation()">
+        </div>
+      </div>
+    </div>
+    <div class="lock-emoji" onclick="rollOffTriangles()">🔒</div>
+  </div>
+
+  <script>
+    function expandCircle(circle) {
+      document.querySelectorAll('.circle.expanded').forEach((expandedCircle) => {
+        if (expandedCircle !== circle) {
+          expandedCircle.classList.remove('expanded');
+        }
+      });
+
+      circle.classList.toggle('expanded');
+    }
+
+    function validateAnswer(input, correctAnswer) {
+      const circle = input.parentElement;
+      const userAnswer = input.value.trim();
+
+      if (userAnswer === correctAnswer) {
+        circle.classList.remove('incorrect');
+        circle.classList.add('correct');
+      } else {
+        circle.classList.remove('correct');
+        circle.classList.add('incorrect');
+      }
+
+      checkAllAnswers();
+    }
+
+    function checkAllAnswers() {
+      const circles = document.querySelectorAll('.circle');
+      const lockEmoji = document.querySelector('.lock-emoji');
+      let allCorrect = true;
+
+      circles.forEach((circle) => {
+        if (!circle.classList.contains('correct')) {
+          allCorrect = false;
+        }
+      });
+
+      if (allCorrect) {
+        lockEmoji.classList.add('visible');
+      } else {
+        lockEmoji.classList.remove('visible');
+      }
+    }
+
+    function rollOffTriangles() {
+      const triangles = document.querySelectorAll('.triangle');
+      const lockEmoji = document.querySelector('.lock-emoji');
+
+      triangles.forEach((triangle, index) => {
+        setTimeout(() => {
+          if (index === 0) {
+            triangle.classList.add('roll-off-top');
+          } else if (index === 1) {
+            triangle.classList.add('roll-off-right');
+          } else if (index === 2) {
+            triangle.classList.add('roll-off-bottom');
+          } else if (index === 3) {
+            triangle.classList.add('roll-off-left');
+          }
+        }, index * 300);
+      });
+
+      setTimeout(() => {
+        lockEmoji.classList.add('drop-down');
+      }, triangles.length * 300 + 500);
+
+      setTimeout(() => {
+        window.location.href = 'songkis.html';
+      }, triangles.length * 300 + 1500);
+    }
+
+    document.addEventListener('click', (event) => {
+      const circles = document.querySelectorAll('.circle');
+      let isClickInsideCircle = false;
+
+      circles.forEach((circle) => {
+        if (circle.contains(event.target)) {
+          isClickInsideCircle = true;
+        }
+      });
+
+      if (!isClickInsideCircle) {
+        circles.forEach((circle) => {
+          circle.classList.remove('expanded');
+        });
+      }
+    });
+
+    // Touch event support
+    document.addEventListener('touchstart', (event) => {
+      const circles = document.querySelectorAll('.circle');
+      let isTouchInsideCircle = false;
+
+      circles.forEach((circle) => {
+        if (circle.contains(event.target)) {
+          isTouchInsideCircle = true;
+        }
+      });
+
+      if (!isTouchInsideCircle) {
+        circles.forEach((circle) => {
+          circle.classList.remove('expanded');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
